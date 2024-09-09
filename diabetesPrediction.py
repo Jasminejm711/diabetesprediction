@@ -10,7 +10,7 @@ try:
     model = load('random_forest_model.joblib')
     label_encoder_gender = load('label_encoder_gender.joblib')
     label_encoder_smoking = load('label_encoder_smoking.joblib')
-    
+    scaler = load('scaler.joblib')
 except Exception as e:
     st.error(f"Error loading model files: {e}")
     model = None
