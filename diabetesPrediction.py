@@ -65,9 +65,9 @@ def main():
 
     # Sidebar for navigation
     st.sidebar.title("Options")
-    option = st.sidebar.selectbox("Choose how to input data", ["Enter data manually", "Upload file"])
+    option = st.sidebar.selectbox("Choose how to input data", ["Enter text", "Upload file"])
 
-    if option == "Enter data manually":
+    if option == "Enter text":
         # Text boxes for user input
         gender_input = st.selectbox("Select Gender", ["female", "male"])
         age_input = st.number_input("Enter Age", min_value=0)
