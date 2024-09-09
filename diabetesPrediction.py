@@ -5,6 +5,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
+import os
+
+print("Checking file existence...")
+print(os.path.isfile('label_encoder_gender.joblib'))
+print(os.path.isfile('label_encoder_smoking.joblib'))
+
+
 # Load your Random Forest model, LabelEncoders, and StandardScaler
 try:
     model = load('random_forest_model.joblib')
