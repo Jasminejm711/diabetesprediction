@@ -73,7 +73,7 @@ def main():
 
     if option == "Enter data manually":
         # Text boxes for user input
-        gender_input = st.selectbox("Select gender", ["female", "male", "other"])
+        gender_input = st.selectbox("Select gender", ["female", "male"])
         age_input = st.number_input("Enter age", min_value=0)
         hypertension_input = st.radio("Hypertension (0=No, 1=Yes)", (0, 1))
         heart_disease_input = st.radio("Heart disease (0=No, 1=Yes)", (0, 1))
