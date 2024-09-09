@@ -58,7 +58,7 @@ def predict_and_display(data):
 # Streamlit application starts here
 def main():
     # Title of your web app
-    st.title("Diabetes Prediction App")
+    st.title("Diabetes Prediction")
 
     # Sidebar for navigation
     st.sidebar.title("Options")
