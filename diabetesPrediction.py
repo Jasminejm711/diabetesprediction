@@ -66,11 +66,11 @@ def main():
 
     if option == "Enter data manually":
         # Text boxes for user input
-        gender_input = st.selectbox("Select gender", ["female", "male", "other"])
+        gender_input = st.selectbox("Select gender", ["female", "male"])
         age_input = st.number_input("Enter age", min_value=0)
-        hypertension_input = st.radio("Hypertension", (1, 0))
-        heart_disease_input = st.radio("Heart disease", (1, 0))
-        smoking_history_input = st.selectbox("Select smoking history", ["no info", "current", "ever", "former", "never", "not current"])
+        hypertension_input = st.radio("Hypertension (1=Yes, 0=No)", (0, 1))
+        heart_disease_input = st.radio("Heart disease (1=Yes, 0=No)", (0, 1)
+        smoking_history_input = st.selectbox("Select smoking history", ["current", "ever", "former", "never"])
         bmi_input = st.number_input("Enter BMI", format="%.2f")
         HbA1c_level_input = st.number_input("Enter HbA1c level", format="%.2f")
         blood_glucose_level_input = st.number_input("Enter blood glucose level", format="%.2f")
