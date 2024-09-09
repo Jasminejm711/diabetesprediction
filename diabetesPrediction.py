@@ -6,10 +6,13 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
 # Load your Random Forest model, LabelEncoders, and StandardScaler
-model = load('random_forest_model.joblib')
-label_encoder_gender = load('label_encoder_gender.joblib')
-label_encoder_smoking = load('label_encoder_smoking.joblib')
-scaler = load('scaler.joblib')
+try:
+    model = load('random_forest_model.joblib')
+    label_encoder_gender = load('label_encoder_gender.joblib')
+    label_encoder_smoking = load('label_encoder_smoking.joblib')
+    scaler = load('scaler.joblib')
+except Exception as e:
+    st.error(f"Error loading model files: {e}")
 
 # Function to handle encoding
 def encode_feature(label_encoder, feature_value):
@@ -63,11 +66,11 @@ def main():
 
     if option == "Enter data manually":
         # Text boxes for user input
-        gender_input = st.selectbox("Select gender", ["female", "male"])
+        gender_input = st.selectbox("Select gender", ["female", "male", "other"])
         age_input = st.number_input("Enter age", min_value=0)
         hypertension_input = st.radio("Hypertension", (1, 0))
         heart_disease_input = st.radio("Heart disease", (1, 0))
-        smoking_history_input = st.selectbox("Select smoking history", ["no info", "current", "ever", "former", "never"])
+        smoking_history_input = st.selectbox("Select smoking history", ["no info", "current", "ever", "former", "never", "not current"])
         bmi_input = st.number_input("Enter BMI", format="%.2f")
         HbA1c_level_input = st.number_input("Enter HbA1c level", format="%.2f")
         blood_glucose_level_input = st.number_input("Enter blood glucose level", format="%.2f")
@@ -99,16 +102,11 @@ def main():
     elif option == "Upload file":
         uploaded_file = st.file_uploader("Choose a file", type=['csv', 'txt'])
         if uploaded_file is not None:
-            # Read the file into a DataFrame
             if uploaded_file.type == "text/csv" or uploaded_file.name.endswith('.csv'):
                 data = pd.read_csv(uploaded_file)
-            elif uploaded_file.type == "text/plain" or uploaded_file.name.endswith('.txt'):
-                # Assuming the text file is comma-separated
-                data = pd.read_csv(uploaded_file, delimiter=',')
-            else:
-                st.error("Unsupported file type. Please upload a CSV or TXT file.")
-                return
-            
+            else:  # Assume text file
+                data = pd.read_csv(uploaded_file, sep="\t", header=None, names=['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level'])
+
             # Check if the file has the right columns
             required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
             if all(col in data.columns for col in required_columns):
@@ -123,7 +121,7 @@ def main():
                 input_data_scaled = scaler.transform(input_data)
                 
                 # Make predictions and display results
-                predict_and_display(pd.DataFrame(input_data_scaled, columns=required_columns))
+                predict_and_display(pd.DataFrame(input_data, columns=required_columns))
             else:
                 st.error("Uploaded file does not have the required columns.")
 
