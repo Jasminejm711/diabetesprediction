@@ -12,7 +12,7 @@ label_encoder_smoking = load('label_encoder_smoking.joblib')
 scaler = load('scaler.joblib')
 
 # Define the mapping for the prediction labels
-PREDICTION_LABELS = {0: "The person does not have diabetes", 1: "The person has diabetes"}
+PREDICTION_LABELS = {0: "no diabetes", 1: "has diabetes"}
 
 # Function to handle encoding
 def encode_feature(label_encoder, feature_value):
