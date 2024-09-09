@@ -4,13 +4,15 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-from io import StringIO
 
 # Load your Random Forest model, LabelEncoders, and StandardScaler
 model = load('random_forest_model.joblib')
 label_encoder_gender = load('label_encoder_gender.joblib')
 label_encoder_smoking = load('label_encoder_smoking.joblib')
 scaler = load('scaler.joblib')
+
+# Define the mapping for the prediction labels
+PREDICTION_LABELS = {0: "The person does not have diabetes", 1: "The person has diabetes"}
 
 # Function to handle encoding
 def encode_feature(label_encoder, feature_value):
@@ -27,7 +29,10 @@ def make_prediction(data):
     
     # Make prediction
     prediction = model.predict(data_scaled)
-    return prediction
+    
+    # Map predictions to human-readable labels
+    prediction_labels = [PREDICTION_LABELS[p] for p in prediction]
+    return prediction_labels
 
 # Function to handle and display results
 def predict_and_display(data):
@@ -56,7 +61,7 @@ def predict_and_display(data):
 # Streamlit application starts here
 def main():
     # Title of your web app
-    st.title("Diabetes Prediction App")
+    st.title("Diabetes Prediction")
 
     # Sidebar for navigation
     st.sidebar.title("Options")
@@ -64,11 +69,11 @@ def main():
 
     if option == "Enter data manually":
         # Text boxes for user input
-        gender_input = st.selectbox("Select gender", ["female", "male", "other"])
+        gender_input = st.selectbox("Select gender", ["female", "male"])
         age_input = st.number_input("Enter age", min_value=0)
-        hypertension_input = st.radio("Hypertension", (1, 0))
-        heart_disease_input = st.radio("Heart disease", (1, 0))
-        smoking_history_input = st.selectbox("Select smoking history", ["no info", "current", "ever", "former", "never", "not current"])
+        hypertension_input = st.radio("Hypertension (No=0, Yes=1)", (0, 1))
+        heart_disease_input = st.radio("Heart disease (No=0, Yes=1)", (0, 1))
+        smoking_history_input = st.selectbox("Select smoking history", ["current", "ever", "former", "never"])
         bmi_input = st.number_input("Enter BMI", format="%.2f")
         HbA1c_level_input = st.number_input("Enter HbA1c level", format="%.2f")
         blood_glucose_level_input = st.number_input("Enter blood glucose level", format="%.2f")
