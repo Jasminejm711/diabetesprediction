@@ -12,7 +12,7 @@ label_encoder_smoking = load('label_encoder_smoking.joblib')
 scaler = load('scaler.joblib')
 
 # Define the mapping for the prediction labels
-PREDICTION_LABELS = {0: "no diabetes", 1: "has diabetes"}
+PREDICTION_LABELS = {0: "No diabetes", 1: "Has diabetes"}
 
 # Function to handle encoding
 def encode_feature(label_encoder, feature_value):
@@ -69,14 +69,14 @@ def main():
 
     if option == "Enter data manually":
         # Text boxes for user input
-        gender_input = st.selectbox("Select gender", ["female", "male"])
-        age_input = st.number_input("Enter age", min_value=0)
+        gender_input = st.selectbox("Select Gender", ["female", "male"])
+        age_input = st.number_input("Enter Age", min_value=0)
         hypertension_input = st.radio("Hypertension (No=0, Yes=1)", (0, 1))
-        heart_disease_input = st.radio("Heart disease (No=0, Yes=1)", (0, 1))
-        smoking_history_input = st.selectbox("Select smoking history", ["current", "ever", "former", "never"])
+        heart_disease_input = st.radio("Heart Disease (No=0, Yes=1)", (0, 1))
+        smoking_history_input = st.selectbox("Select Smoking History", ["current", "ever", "former", "never"])
         bmi_input = st.number_input("Enter BMI", format="%.2f")
-        HbA1c_level_input = st.number_input("Enter HbA1c level", format="%.2f")
-        blood_glucose_level_input = st.number_input("Enter blood glucose level", format="%.2f")
+        HbA1c_level_input = st.number_input("Enter HbA1c Level", format="%.2f")
+        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level", format="%.2f")
 
         # Predict button
         if st.button('Predict'):
