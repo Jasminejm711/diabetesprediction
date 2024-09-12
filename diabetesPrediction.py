@@ -70,21 +70,21 @@ def main():
     if option == "Enter text":
         # Text boxes for user input
         gender_input = st.selectbox("Select Gender", ["female", "male"])
-        age_input = st.number_input("Enter Age", value=1, min_value=1, max_value=100)
+        age_input = st.number_input("Enter Age", max_value=100)
         hypertension_input = st.radio("Hypertension (No=0, Yes=1)", (0, 1))
         heart_disease_input = st.radio("Heart Disease (No=0, Yes=1)", (0, 1))
         smoking_history_input = st.selectbox("Select Smoking History", ["current", "ever", "former", "never", "not current"])
 
         # BMI, HbA1c Level, and Blood Glucose Level inputs with default values > 0.00
-        bmi_input = st.number_input("Enter BMI", format="%.2f", value=0.01, min_value=0.01, step=0.01)
-        HbA1c_level_input = st.number_input("Enter HbA1c Level", format="%.2f", value=0.01, min_value=0.01, step=0.01)
-        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level", format="%.2f", value=0.01, min_value=0.01, step=0.01)
+        bmi_input = st.number_input("Enter BMI", format="%.2f")
+        HbA1c_level_input = st.number_input("Enter HbA1c Level", format="%.2f")
+        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level", format="%.2f")
 
         # Predict button
         if st.button('Predict'):
             # Validate input values
-            if bmi_input <= 0.00 or HbA1c_level_input <= 0.00 or blood_glucose_level_input <= 0.00:
-                st.error("BMI, HbA1c Level, and Blood Glucose Level must be greater than 0.00.")
+            if age_input <= 0 or bmi_input <= 0.00 or HbA1c_level_input <= 0.00 or blood_glucose_level_input <= 0.00:
+                st.error("Age, BMI, HbA1c Level, and Blood Glucose Level must be greater than 0.00.")
                 return
 
             # Encode categorical features
