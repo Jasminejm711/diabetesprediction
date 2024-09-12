@@ -107,7 +107,7 @@ def main():
             except ValueError as e:
                 st.error(e)
 
-    elif option == "Upload file":
+     elif option == "Upload file":
         uploaded_file = st.file_uploader("Choose a file", type=['csv', 'txt'])
         if uploaded_file is not None:
             # Check if file is empty
