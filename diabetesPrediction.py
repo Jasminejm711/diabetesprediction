@@ -40,12 +40,16 @@ def predict_and_display(data):
     predictions = make_prediction(data)
 
     # Combine the input data and predictions into a DataFrame
-    data['Prediction'] = predictions
-    results_df = data
+    results_df = pd.DataFrame(data)
+    results_df['Prediction'] = predictions
+    
+    # Round numerical values to 2 decimal places
+    numerical_columns = ['bmi', 'HbA1c_level', 'blood_glucose_level']
+    results_df[numerical_columns] = results_df[numerical_columns].round(2)
 
-    # Tabulate and display the results
-    with st.expander("Show/Hide Prediction Table"):
-        st.table(results_df)
+    # Display the final prediction result
+    st.write("Final Prediction Result:")
+    st.table(results_df[['Prediction']])
         
     # Display histogram of predictions
     st.write("Histogram of Predictions:")
