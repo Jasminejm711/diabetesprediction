@@ -132,21 +132,23 @@ def main():
             # Check if the file has the right columns
             required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
             if all(col in data.columns for col in required_columns):
+                # Handle missing values
+                data = data[required_columns]  # Ensure only the required columns are included
+                data = data.replace('', np.nan)  # Replace empty strings with NaN
+                data = data.fillna({'age': data['age'].median(),
+                                    'hypertension': data['hypertension'].mode()[0],
+                                    'heart_disease': data['heart_disease'].mode()[0],
+                                    'bmi': data['bmi'].mean(),
+                                    'HbA1c_level': data['HbA1c_level'].mean(),
+                                    'blood_glucose_level': data['blood_glucose_level'].mean()})
+                
                 # Encode categorical features
                 try:
                     data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
                     data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
                     
-                    # Check for invalid values
-                    if (data[['bmi', 'HbA1c_level', 'blood_glucose_level']] <= 0).any().any():
-                        st.error("BMI, HbA1c Level, and Blood Glucose Level must be greater than 0.")
-                        return
-                    
-                    # Create DataFrame with only the required columns
-                    input_data = data[required_columns]
-                    
                     # Standardize the data
-                    input_data_scaled = scaler.transform(input_data)
+                    input_data_scaled = scaler.transform(data)
                     
                     # Make predictions and display results
                     predict_and_display(pd.DataFrame(input_data_scaled, columns=required_columns))
