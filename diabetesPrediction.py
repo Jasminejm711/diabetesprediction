@@ -80,11 +80,16 @@ def main():
 
         # Predict button
         if st.button('Predict'):
+            # Validate input values
+            if bmi_input <= 0.00 or HbA1c_level_input <= 0.00 or blood_glucose_level_input <= 0.00:
+                st.error("BMI, HbA1c Level, and Blood Glucose Level must be greater than 0.00.")
+                return
+
             # Encode categorical features
             try:
                 gender_encoded = encode_feature(label_encoder_gender, gender_input)
                 smoking_history_encoded = encode_feature(label_encoder_smoking, smoking_history_input)
-                
+
                 # Create a DataFrame with the input data
                 input_data = pd.DataFrame({
                     'gender': [gender_encoded],
@@ -96,7 +101,7 @@ def main():
                     'HbA1c_level': [HbA1c_level_input],
                     'blood_glucose_level': [blood_glucose_level_input]
                 })
-                
+
                 # Make prediction and display results
                 predict_and_display(input_data)
             except ValueError as e:
@@ -131,6 +136,11 @@ def main():
                 try:
                     data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
                     data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
+                    
+                    # Check for invalid values
+                    if (data[['bmi', 'HbA1c_level', 'blood_glucose_level']] <= 0).any().any():
+                        st.error("BMI, HbA1c Level, and Blood Glucose Level must be greater than 0.00.")
+                        return
                     
                     # Create DataFrame with only the required columns
                     input_data = data[required_columns]
