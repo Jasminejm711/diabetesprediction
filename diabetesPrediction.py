@@ -34,8 +34,8 @@ def make_prediction(data):
     prediction_labels = [PREDICTION_LABELS[p] for p in prediction]
     return prediction_labels
 
-    # Function to handle and display results
-    def predict_and_display(data):
+# Function to handle and display results
+def predict_and_display(data):
     # Make predictions
     predictions = make_prediction(data)
 
