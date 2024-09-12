@@ -142,6 +142,10 @@ def main():
                                     'HbA1c_level': data['HbA1c_level'].mean(),
                                     'blood_glucose_level': data['blood_glucose_level'].mean()})
                 
+                # Ensure categorical columns are strings
+                data['gender'] = data['gender'].astype(str)
+                data['smoking_history'] = data['smoking_history'].astype(str)
+                
                 # Encode categorical features
                 try:
                     data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
