@@ -116,50 +116,47 @@ def main():
                 return
 
             # Read the file into a DataFrame
-            if uploaded_file.type == "text/csv" or uploaded_file.name.endswith('.csv'):
-                data = pd.read_csv(uploaded_file)
-            elif uploaded_file.type == "text/plain" or uploaded_file.name.endswith('.txt'):
-                # Assuming the text file is comma-separated
-                data = pd.read_csv(uploaded_file, delimiter=',')
-            else:
-                st.error("Unsupported file type. Please upload a CSV or TXT file.")
-                return
-            
-            # Show a preview of the data
-            st.write("Preview of uploaded data:")
-            st.dataframe(data.head())
+            try:
+                if uploaded_file.type == "text/csv" or uploaded_file.name.endswith('.csv'):
+                    data = pd.read_csv(uploaded_file)
+                elif uploaded_file.type == "text/plain" or uploaded_file.name.endswith('.txt'):
+                    # Assuming the text file is comma-separated
+                    data = pd.read_csv(uploaded_file, delimiter=',')
+                else:
+                    st.error("Unsupported file type. Please upload a CSV or TXT file.")
+                    return
+                
+                # Show a preview of the data
+                st.write("Preview of uploaded data:")
+                st.dataframe(data.head())
 
-            # Check if the file has the right columns
-            required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
-            if all(col in data.columns for col in required_columns):
-                # Handle missing values
-                data = data[required_columns]  # Ensure only the required columns are included
-                data = data.replace('', np.nan)  # Replace empty strings with NaN
-                data = data.fillna({'age': data['age'].median(),
-                                    'hypertension': data['hypertension'].mode()[0],
-                                    'heart_disease': data['heart_disease'].mode()[0],
-                                    'bmi': data['bmi'].mean(),
-                                    'HbA1c_level': data['HbA1c_level'].mean(),
-                                    'blood_glucose_level': data['blood_glucose_level'].mean()})
-                
-                # Ensure categorical columns are strings
-                data['gender'] = data['gender'].astype(str)
-                data['smoking_history'] = data['smoking_history'].astype(str)
-                
-                # Encode categorical features
-                try:
-                    data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
-                    data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
-                    
-                    # Standardize the data
-                    input_data_scaled = scaler.transform(data)
-                    
-                    # Make predictions and display results
-                    predict_and_display(pd.DataFrame(input_data_scaled, columns=required_columns))
-                except ValueError as e:
-                    st.error(e)
-            else:
-                st.error("Uploaded file does not have the required columns.")
+                # Check if the file has the right columns
+                required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
+                if all(col in data.columns for col in required_columns):
+                    # Check for missing values
+                    if data[required_columns].isnull().any().any():
+                        st.error("Uploaded file contains missing values. Please ensure all required fields are filled.")
+                    else:
+                        # Ensure categorical columns are strings
+                        data['gender'] = data['gender'].astype(str)
+                        data['smoking_history'] = data['smoking_history'].astype(str)
+                        
+                        # Encode categorical features
+                        try:
+                            data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
+                            data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
+                            
+                            # Standardize the data
+                            input_data_scaled = scaler.transform(data[required_columns])
+                            
+                            # Make predictions and display results
+                            predict_and_display(pd.DataFrame(input_data_scaled, columns=required_columns))
+                        except ValueError as e:
+                            st.error(e)
+                else:
+                    st.error("Uploaded file does not have the required columns.")
+            except Exception as e:
+                st.error(f"Error reading the file: {e}")
 
 if __name__ == '__main__':
     main()
