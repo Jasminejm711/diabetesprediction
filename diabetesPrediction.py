@@ -56,7 +56,7 @@ def predict_and_display(data):
     })
     
     # Display the final prediction
-    st.write("Final Prediction:")
+    st.write("Prediction Result:")
     st.table(results_df)
 
     # Display histogram of predictions
