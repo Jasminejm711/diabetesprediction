@@ -37,15 +37,27 @@ def make_prediction(data):
 # Function to handle and display results
 def predict_and_display(data):
     # Make predictions
+    #predictions = make_prediction(data)
+
+    # Combine the input data and predictions into a DataFrame
+    #data['Prediction'] = predictions
+    #results_df = data
+
+    # Tabulate and display the results
+    #with st.expander("Show/Hide Prediction Table"):
+    #    st.table(results_df)
+
+    # Make predictions
     predictions = make_prediction(data)
 
     # Combine the input data and predictions into a DataFrame
-    data['Prediction'] = predictions
-    results_df = data
-
-    # Tabulate and display the results
-    with st.expander("Show/Hide Prediction Table"):
-        st.table(results_df)
+    results_df = pd.DataFrame({
+        'Prediction': predictions
+    })
+    
+    # Display the final prediction
+    st.write("Final Prediction:")
+    st.table(results_df)
 
     # Display histogram of predictions
     st.write("Histogram of Predictions:")
