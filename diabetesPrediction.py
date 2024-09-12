@@ -39,12 +39,13 @@ def predict_and_display(data):
     # Make predictions
     predictions = make_prediction(data)
 
-    # Combine the input data and predictions into DataFrame
-    data['Prediction'] = predictions
-    results_df = data
-
-    # Display the final prediction
-    st.write("Final Prediction:")
+    # Create a DataFrame for the final prediction results
+    results_df = pd.DataFrame({
+        'Prediction': predictions
+    })
+    
+    # Display the final prediction result
+    st.write("Final Prediction Result:")
     st.table(results_df)
 
     # Display histogram of predictions
@@ -75,6 +76,36 @@ def predict_and_display(data):
         st.pyplot(fig)
     else:
         st.write("HbA1c level data is not available for density plot.")
+
+    # Additional visualization: Pie chart of predictions
+    st.write("Pie Chart of Predictions:")
+    fig, ax = plt.subplots()
+    prediction_counts.plot(kind='pie', ax=ax, autopct='%1.1f%%', colors=['#1f77b4', '#ff7f0e'], startangle=90)
+    ax.set_title("Prediction Distribution")
+    st.pyplot(fig)
+    
+    # Additional visualization: Boxplot of Age (example)
+    if 'age' in data.columns:
+        st.write("Boxplot of Age:")
+        fig, ax = plt.subplots()
+        data['age'].plot(kind='box', ax=ax, color='#1f77b4')
+        ax.set_title("Boxplot of Age")
+        ax.set_ylabel("Age")
+        st.pyplot(fig)
+    else:
+        st.write("Age data is not available for the boxplot.")
+    
+    # Additional visualization: Scatter plot of HbA1c Level vs Blood Glucose Level
+    if 'HbA1c_level' in data.columns and 'blood_glucose_level' in data.columns:
+        st.write("Scatter Plot of HbA1c Level vs Blood Glucose Level:")
+        fig, ax = plt.subplots()
+        ax.scatter(data['HbA1c_level'], data['blood_glucose_level'], c='blue', alpha=0.5)
+        ax.set_title("HbA1c Level vs Blood Glucose Level")
+        ax.set_xlabel("HbA1c Level (%)")
+        ax.set_ylabel("Blood Glucose Level (mg/dL)")
+        st.pyplot(fig)
+    else:
+        st.write("HbA1c Level or Blood Glucose Level data is not available for the scatter plot.")
 
 # Streamlit application starts here
 def main():
