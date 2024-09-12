@@ -12,7 +12,7 @@ label_encoder_smoking = load('label_encoder_smoking.joblib')
 scaler = load('scaler.joblib')
 
 # Define the mapping for the prediction labels
-PREDICTION_LABELS = {0: "You may have no diabetes", 1: "You may has diabetes"}
+PREDICTION_LABELS = {0: "No diabetes", 1: "Has diabetes"}
 
 # Function to handle encoding
 def encode_feature(label_encoder, feature_value):
@@ -38,32 +38,26 @@ def make_prediction(data):
 def predict_and_display(data):
     # Make predictions
     predictions = make_prediction(data)
-    
+
     # Combine the input data and predictions into a DataFrame
-    results_df = pd.DataFrame(data)
-    results_df['Prediction'] = predictions
+    data['Prediction'] = predictions
+    results_df = data
 
-    # Round numerical values to 2 decimal places
-    numerical_columns = ['bmi', 'HbA1c_level', 'blood_glucose_level']
-    results_df[numerical_columns] = results_df[numerical_columns].round(2)
+    # Tabulate and display the results
+    with st.expander("Show/Hide Prediction Table"):
+        st.table(results_df)
 
-    # Display the final prediction result with updated labels
-    st.write("Prediction Result:")
-    results_df['Prediction'] = results_df['Prediction'].map(PREDICTION_LABELS)
-    st.table(results_df[['Prediction']])
-        
     # Display histogram of predictions
     st.write("Histogram of Predictions:")
     fig, ax = plt.subplots()
     prediction_counts = pd.Series(predictions).value_counts().sort_index()
-    prediction_counts.index = prediction_counts.index.map(PREDICTION_LABELS)
     prediction_counts.plot(kind='bar', ax=ax, color=['#1f77b4', '#ff7f0e'])
     ax.set_title("Distribution of Diabetes Predictions")
     ax.set_xlabel("Prediction")
     ax.set_ylabel("Count")
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))  # Ensure y-axis has integer ticks
     st.pyplot(fig)
-    
+
 # Streamlit application starts here
 def main():
     # Title of your web app
@@ -165,4 +159,4 @@ def main():
                 st.error(f"Error reading the file: {e}")
 
 if __name__ == '__main__':
-    main()
+    main() 
