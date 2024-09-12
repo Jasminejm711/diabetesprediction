@@ -39,13 +39,13 @@ def predict_and_display(data):
     # Make predictions
     predictions = make_prediction(data)
 
-    # Combine the input data and predictions into a DataFrame
+    # Combine the input data and predictions into DataFrame
     data['Prediction'] = predictions
     results_df = data
 
-    # Tabulate and display the results
-    with st.expander("Show/Hide Prediction Table"):
-        st.table(results_df)
+    # Display the final prediction
+    st.write("Final Prediction:")
+    st.table(results_df)
 
     # Display histogram of predictions
     st.write("Histogram of Predictions:")
@@ -57,6 +57,24 @@ def predict_and_display(data):
     ax.set_ylabel("Count")
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))  # Ensure y-axis has integer ticks
     st.pyplot(fig)
+
+    # Additional visualization: Pie chart of predictions
+    st.write("Pie Chart of Predictions:")
+    fig, ax = plt.subplots()
+    prediction_counts.plot(kind='pie', ax=ax, autopct='%1.1f%%', colors=['#1f77b4', '#ff7f0e'])
+    ax.set_title("Prediction Distribution")
+    st.pyplot(fig)
+
+    # Additional visualization: Density plot of HbA1c levels (example)
+    st.write("Density Plot of HbA1c Levels:")
+    if 'HbA1c_level' in data.columns:
+        fig, ax = plt.subplots()
+        data['HbA1c_level'].plot(kind='kde', ax=ax, color='#1f77b4')
+        ax.set_title("Density Plot of HbA1c Levels")
+        ax.set_xlabel("HbA1c Level (%)")
+        st.pyplot(fig)
+    else:
+        st.write("HbA1c level data is not available for density plot.")
 
 # Streamlit application starts here
 def main():
