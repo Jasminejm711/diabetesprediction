@@ -70,13 +70,13 @@ def main():
     if option == "Enter text":
         # Text boxes for user input
         gender_input = st.selectbox("Select Gender", ["female", "male"])
-        age_input = st.number_input("Enter Age", max_value=100)
+        age_input = st.number_input("Enter Age", value=0, min_value=1, max_value=100)
         hypertension_input = st.radio("Hypertension (No=0, Yes=1)", (0, 1))
         heart_disease_input = st.radio("Heart Disease (No=0, Yes=1)", (0, 1))
         smoking_history_input = st.selectbox("Select Smoking History", ["current", "ever", "former", "never", "not current"])
-        bmi_input = st.number_input("Enter BMI", format="%.2f")
-        HbA1c_level_input = st.number_input("Enter HbA1c Level", format="%.2f")
-        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level", format="%.2f")
+        bmi_input = st.number_input("Enter BMI", format="%.2f", min_value=0.01, step=0.01)
+        HbA1c_level_input = st.number_input("Enter HbA1c Level", format="%.2f", min_value=0.01, step=0.01)
+        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level", format="%.2f", min_value=0.01, step=0.01)
 
         # Predict button
         if st.button('Predict'):
@@ -107,7 +107,7 @@ def main():
             except ValueError as e:
                 st.error(e)
 
-     elif option == "Upload file":
+    elif option == "Upload file":
         uploaded_file = st.file_uploader("Choose a file", type=['csv', 'txt'])
         if uploaded_file is not None:
             # Check if file is empty
