@@ -51,7 +51,7 @@ def predict_and_display(data):
     st.write("Histogram of Predictions:")
     fig, ax = plt.subplots()
     prediction_counts = pd.Series(predictions).value_counts().sort_index()
-    prediction_counts.plot(kind='bar', ax=ax)
+    prediction_counts.plot(kind='bar', ax=ax, color=['#1f77b4', '#ff7f0e'])
     ax.set_title("Distribution of Diabetes Predictions")
     ax.set_xlabel("Prediction")
     ax.set_ylabel("Count")
@@ -73,7 +73,7 @@ def main():
         age_input = st.number_input("Enter Age", min_value=0)
         hypertension_input = st.radio("Hypertension (No=0, Yes=1)", (0, 1))
         heart_disease_input = st.radio("Heart Disease (No=0, Yes=1)", (0, 1))
-        smoking_history_input = st.selectbox("Select Smoking History", ["current", "ever", "former", "never","not cureent"])
+        smoking_history_input = st.selectbox("Select Smoking History", ["current", "ever", "former", "never", "not current"])
         bmi_input = st.number_input("Enter BMI", format="%.2f")
         HbA1c_level_input = st.number_input("Enter HbA1c Level", format="%.2f")
         blood_glucose_level_input = st.number_input("Enter Blood Glucose Level", format="%.2f")
@@ -105,6 +105,11 @@ def main():
     elif option == "Upload file":
         uploaded_file = st.file_uploader("Choose a file", type=['csv', 'txt'])
         if uploaded_file is not None:
+            # Check if file is empty
+            if uploaded_file.size == 0:
+                st.error("Uploaded file is empty. Please upload a valid file.")
+                return
+
             # Read the file into a DataFrame
             if uploaded_file.type == "text/csv" or uploaded_file.name.endswith('.csv'):
                 data = pd.read_csv(uploaded_file)
@@ -115,21 +120,28 @@ def main():
                 st.error("Unsupported file type. Please upload a CSV or TXT file.")
                 return
             
+            # Show a preview of the data
+            st.write("Preview of uploaded data:")
+            st.dataframe(data.head())
+
             # Check if the file has the right columns
             required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
             if all(col in data.columns for col in required_columns):
                 # Encode categorical features
-                data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
-                data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
-                
-                # Create DataFrame with only the required columns
-                input_data = data[required_columns]
-                
-                # Standardize the data
-                input_data_scaled = scaler.transform(input_data)
-                
-                # Make predictions and display results
-                predict_and_display(pd.DataFrame(input_data_scaled, columns=required_columns))
+                try:
+                    data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
+                    data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
+                    
+                    # Create DataFrame with only the required columns
+                    input_data = data[required_columns]
+                    
+                    # Standardize the data
+                    input_data_scaled = scaler.transform(input_data)
+                    
+                    # Make predictions and display results
+                    predict_and_display(pd.DataFrame(input_data_scaled, columns=required_columns))
+                except ValueError as e:
+                    st.error(e)
             else:
                 st.error("Uploaded file does not have the required columns.")
 
