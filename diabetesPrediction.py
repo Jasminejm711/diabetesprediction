@@ -12,7 +12,7 @@ label_encoder_smoking = load('label_encoder_smoking.joblib')
 scaler = load('scaler.joblib')
 
 # Define the mapping for the prediction labels
-PREDICTION_LABELS = {0: "No diabetes", 1: "Has diabetes"}
+PREDICTION_LABELS = {0: "You may have no diabetes", 1: "You may has diabetes"}
 
 # Function to handle encoding
 def encode_feature(label_encoder, feature_value):
@@ -39,17 +39,14 @@ def predict_and_display(data):
     # Make predictions
     predictions = make_prediction(data)
 
-    # Combine the input data and predictions into a DataFrame
-    results_df = pd.DataFrame(data)
-    results_df['Prediction'] = predictions
+   # Create a DataFrame for the final prediction results
+    results_df = pd.DataFrame({
+        'Prediction': predictions
+    })
     
-    # Round numerical values to 2 decimal places
-    numerical_columns = ['bmi', 'HbA1c_level', 'blood_glucose_level']
-    results_df[numerical_columns] = results_df[numerical_columns].round(2)
-
     # Display the final prediction result
-    st.write("Final Prediction Result:")
-    st.table(results_df[['Prediction']])
+    st.write("Prediction Result:")
+    st.table(results_df)
         
     # Display histogram of predictions
     st.write("Histogram of Predictions:")
