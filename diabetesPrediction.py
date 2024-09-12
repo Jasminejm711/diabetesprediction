@@ -12,7 +12,7 @@ label_encoder_smoking = load('label_encoder_smoking.joblib')
 scaler = load('scaler.joblib')
 
 # Define the mapping for the prediction labels
-PREDICTION_LABELS = {0: "No diabetes", 1: "Has diabetes"}
+PREDICTION_LABELS = {0: "You may not have diabetes", 1: "You may have diabetes"}
 
 # Function to handle encoding
 def encode_feature(label_encoder, feature_value):
@@ -22,13 +22,21 @@ def encode_feature(label_encoder, feature_value):
     except ValueError:
         raise ValueError(f"Feature value '{feature_value}' not found in the LabelEncoder categories.")
 
-# Function to make predictions
-def make_prediction(data):
-    # Standardize the input data
+# Function to encode and standardize data
+def preprocess_data(data):
+    # Encode categorical features
+    data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
+    data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
+    
+    # Standardize the data
     data_scaled = scaler.transform(data)
     
+    return pd.DataFrame(data_scaled, columns=data.columns)
+
+# Function to make predictions
+def make_prediction(data):
     # Make prediction
-    prediction = model.predict(data_scaled)
+    prediction = model.predict(data)
     
     # Map predictions to human-readable labels
     prediction_labels = [PREDICTION_LABELS[p] for p in prediction]
@@ -36,28 +44,19 @@ def make_prediction(data):
 
 # Function to handle and display results
 def predict_and_display(data):
-    # Make predictions
-    #predictions = make_prediction(data)
-
-    # Combine the input data and predictions into a DataFrame
-    #data['Prediction'] = predictions
-    #results_df = data
-
-    # Tabulate and display the results
-    #with st.expander("Show/Hide Prediction Table"):
-    #    st.table(results_df)
-
-    # Make predictions
-    predictions = make_prediction(data)
-
-    # Combine the input data and predictions into a DataFrame
-    results_df = pd.DataFrame({
-        'Prediction': predictions
-    })
+    # Preprocess the data (encode and standardize)
+    preprocessed_data = preprocess_data(data)
     
-    # Display the final prediction
+    # Make predictions
+    predictions = make_prediction(preprocessed_data)
+
+    # Combine the input data and predictions into a DataFrame
+    results_df = data.copy()
+    results_df['Prediction'] = predictions
+
+    # Display the final prediction result
     st.write("Prediction Result:")
-    st.table(results_df)
+    st.table(results_df[['Prediction']])
 
     # Display histogram of predictions
     st.write("Histogram of Predictions:")
@@ -87,8 +86,8 @@ def main():
         heart_disease_input = st.radio("Heart Disease (No=0, Yes=1)", (0, 1))
         smoking_history_input = st.selectbox("Select Smoking History", ["current", "ever", "former", "never", "not current"])
         bmi_input = st.number_input("Enter BMI (kg/m²)", format="%.2f")
-        HbA1c_level_input = st.number_input("Enter HbA1c Level(%)", format="%.2f")
-        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level(mg/dL)", format="%.2f")
+        HbA1c_level_input = st.number_input("Enter HbA1c Level (%)", format="%.2f")
+        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level (mg/dL)", format="%.2f")
 
         # Predict button
         if st.button('Predict'):
@@ -97,27 +96,20 @@ def main():
                 st.error("Age, BMI, HbA1c Level, and Blood Glucose Level must be greater than 0.00.")
                 return
 
-            # Encode categorical features
-            try:
-                gender_encoded = encode_feature(label_encoder_gender, gender_input)
-                smoking_history_encoded = encode_feature(label_encoder_smoking, smoking_history_input)
+            # Create a DataFrame with the input data
+            input_data = pd.DataFrame({
+                'gender': [gender_input],
+                'age': [age_input],
+                'hypertension': [hypertension_input],
+                'heart_disease': [heart_disease_input],
+                'smoking_history': [smoking_history_input],
+                'bmi': [bmi_input],
+                'HbA1c_level': [HbA1c_level_input],
+                'blood_glucose_level': [blood_glucose_level_input]
+            })
 
-                # Create a DataFrame with the input data
-                input_data = pd.DataFrame({
-                    'gender': [gender_encoded],
-                    'age': [age_input],
-                    'hypertension': [hypertension_input],
-                    'heart_disease': [heart_disease_input],
-                    'smoking_history': [smoking_history_encoded],
-                    'bmi': [bmi_input],
-                    'HbA1c_level': [HbA1c_level_input],
-                    'blood_glucose_level': [blood_glucose_level_input]
-                })
-
-                # Make prediction and display results
-                predict_and_display(input_data)
-            except ValueError as e:
-                st.error(e)
+            # Make prediction and display results
+            predict_and_display(input_data)
 
     elif option == "Upload file":
         uploaded_file = st.file_uploader("Choose a file", type=['csv', 'txt'])
@@ -141,7 +133,6 @@ def main():
                 # Show a preview of the data
                 st.write("Preview of uploaded data:")
                 st.dataframe(data.head())
-
                 # Check if the file has the right columns
                 required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
                 if all(col in data.columns for col in required_columns):
@@ -153,22 +144,12 @@ def main():
                         data['gender'] = data['gender'].astype(str)
                         data['smoking_history'] = data['smoking_history'].astype(str)
                         
-                        # Encode categorical features
-                        try:
-                            data['gender'] = data['gender'].apply(lambda x: encode_feature(label_encoder_gender, x))
-                            data['smoking_history'] = data['smoking_history'].apply(lambda x: encode_feature(label_encoder_smoking, x))
-                            
-                            # Standardize the data
-                            input_data_scaled = scaler.transform(data[required_columns])
-                            
-                            # Make predictions and display results
-                            predict_and_display(pd.DataFrame(input_data_scaled, columns=required_columns))
-                        except ValueError as e:
-                            st.error(e)
+                        # Make prediction and display results
+                        predict_and_display(data[required_columns])
                 else:
                     st.error("Uploaded file does not have the required columns.")
             except Exception as e:
                 st.error(f"Error reading the file: {e}")
 
 if __name__ == '__main__':
-    main() 
+    main()
