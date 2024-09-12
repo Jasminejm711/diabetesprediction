@@ -74,9 +74,9 @@ def main():
         hypertension_input = st.radio("Hypertension (No=0, Yes=1)", (0, 1))
         heart_disease_input = st.radio("Heart Disease (No=0, Yes=1)", (0, 1))
         smoking_history_input = st.selectbox("Select Smoking History", ["current", "ever", "former", "never", "not current"])
-        bmi_input = st.number_input("Enter BMI", format="%.2f")
-        HbA1c_level_input = st.number_input("Enter HbA1c Level", format="%.2f")
-        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level", format="%.2f")
+        bmi_input = st.number_input("Enter BMI (kg/m²)", format="%.2f")
+        HbA1c_level_input = st.number_input("Enter HbA1c Level(%)", format="%.2f")
+        blood_glucose_level_input = st.number_input("Enter Blood Glucose Level(mg/dL)", format="%.2f")
 
         # Predict button
         if st.button('Predict'):
