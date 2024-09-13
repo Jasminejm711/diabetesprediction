@@ -133,10 +133,12 @@ def main():
                 # Show a preview of the data
                 st.write("Preview of uploaded data:")
                 st.dataframe(data.head())
+                
                 # Normalize column names to lowercase
                 data.columns = [col.lower() for col in data.columns]
+                
                 # Check if the file has the right columns
-                required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'hba1c_level', 'blood_glucose_level']
+                required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
                 if all(col in data.columns for col in required_columns):
                     # Check for missing values
                     if data[required_columns].isnull().any().any():
@@ -149,9 +151,9 @@ def main():
                         # Make prediction and display results
                         predict_and_display(data[required_columns])
                 else:
-                    missing_cols = [col for col in required_columns if col not in data.columns]
-                    st.error(f"Uploaded file is missing required columns: {', '.join(missing_cols)}")
+                    st.error("Uploaded file does not have the required columns.")
             except Exception as e:
                 st.error(f"Error reading the file: {e}")
+                
 if __name__ == '__main__':
     main()
