@@ -111,16 +111,15 @@ def main():
             # Make prediction and display results
             predict_and_display(input_data)
 
-    elif option == "Upload file":
-        uploaded_file = st.file_uploader("Choose a file", type=['csv', 'txt'])
-        if uploaded_file is not None:
-            # Check if file is empty
-            if uploaded_file.size == 0:
-                st.error("Uploaded file is empty. Please upload a valid file.")
-                return
-
-            # Read the file into a DataFrame
+    if option == "Upload file":
+    uploaded_file = st.file_uploader("Choose a file", type=['csv', 'txt'])
+    if uploaded_file is not None:
+        # Check if file is empty
+        if uploaded_file.size == 0:
+            st.error("Uploaded file is empty. Please upload a valid file.")
+        else:
             try:
+                # Read the file into a DataFrame
                 if uploaded_file.type == "text/csv" or uploaded_file.name.endswith('.csv'):
                     data = pd.read_csv(uploaded_file)
                 elif uploaded_file.type == "text/plain" or uploaded_file.name.endswith('.txt'):
@@ -128,13 +127,18 @@ def main():
                     data = pd.read_csv(uploaded_file, delimiter=',')
                 else:
                     st.error("Unsupported file type. Please upload a CSV or TXT file.")
-                    return
                 
+                # Normalize column names to lowercase
+                data.columns = [col.lower() for col in data.columns]
+
                 # Show a preview of the data
                 st.write("Preview of uploaded data:")
                 st.dataframe(data.head())
-                # Check if the file has the right columns
-                required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
+
+                # Define required columns in lowercase
+                required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'hba1c_level', 'blood_glucose_level']
+
+                # Check if the DataFrame has the required columns
                 if all(col in data.columns for col in required_columns):
                     # Check for missing values
                     if data[required_columns].isnull().any().any():
@@ -143,11 +147,13 @@ def main():
                         # Ensure categorical columns are strings
                         data['gender'] = data['gender'].astype(str)
                         data['smoking_history'] = data['smoking_history'].astype(str)
-                        
+
                         # Make prediction and display results
                         predict_and_display(data[required_columns])
                 else:
-                    st.error("Uploaded file does not have the required columns.")
+                    missing_cols = [col for col in required_columns if col not in data.columns]
+                    st.error(f"Uploaded file is missing required columns: {', '.join(missing_cols)}")
+                
             except Exception as e:
                 st.error(f"Error reading the file: {e}")
 
