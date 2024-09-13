@@ -130,22 +130,16 @@ def main():
                     st.error("Unsupported file type. Please upload a CSV or TXT file.")
                     return
 
-                # Normalize column names to lowercase
-                data.columns = [col.lower() for col in data.columns]
-
                 # Show a preview of the data
                 st.write("Preview of uploaded data:")
                 st.dataframe(data.head())
                 
-                # Define required columns in lowercase
-                required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'hba1c_level', 'blood_glucose_level']
-                
-                # Check if the DataFrame has the right columns
+                # Check if the file has the right columns
+                required_columns = ['gender', 'age', 'hypertension', 'heart_disease', 'smoking_history', 'bmi', 'HbA1c_level', 'blood_glucose_level']
                 if all(col in data.columns for col in required_columns):
                     # Check for missing values
                     if data[required_columns].isnull().any().any():
                         st.error("Uploaded file contains missing values. Please ensure all required fields are filled.")
-                    
                     else:
                         # Ensure categorical columns are strings
                         data['gender'] = data['gender'].astype(str)
