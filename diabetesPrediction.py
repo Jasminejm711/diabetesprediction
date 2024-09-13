@@ -150,6 +150,5 @@ def main():
                     st.error("Uploaded file does not have the required columns.")
             except Exception as e:
                 st.error(f"Error reading the file: {e}")
-                
 if __name__ == '__main__':
     main()
